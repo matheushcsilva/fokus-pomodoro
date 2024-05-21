@@ -1,18 +1,18 @@
 const html = document.querySelector('html');
-const focoBt = document.querySelector('.app__card-button--foco');
-const curtoBt = document.querySelector('.app__card-button--curto');
-const longoBt = document.querySelector('.app__card-button--longo');
+const btFoco = document.querySelector('.app__card-button--foco');
+const btCurto = document.querySelector('.app__card-button--curto');
+const btLongo = document.querySelector('.app__card-button--longo');
 const banner = document.querySelector('.app__image');
 const titulo = document.querySelector('.app__title');
 const botoes = document.querySelectorAll('.app__card-button');
-const musicaFocoInput = document.querySelector('#alternar-musica');
+const inputMusicaFoco = document.querySelector('#alternar-musica');
+const btStartPause = document.querySelector('#start-pause');
 const musica = new Audio('../sons/luna-rise-part-one.mp3');
-const startPauseBt = document.querySelector('#start-pause');
 const somPlay = new Audio('../sons/play.wav');
 const somPause = new Audio('../sons/pause.mp3');
 const somEnd = new Audio('../sons/beep.mp3');
-const iniciarOuPausarBt = document.querySelector('#start-pause span');
-const iniciarOuPausarIcon = document.querySelector('#start-pause img');
+const btIniciarOuPausar = document.querySelector('#start-pause span');
+const iconIniciarOuPausar = document.querySelector('#start-pause img');
 const tempoNaTela = document.querySelector('#timer');
 
 let tempoDecorridoEmSegundos = 1500;
@@ -20,7 +20,7 @@ let intervaloId = null;
 
 musica.loop = true;
 
-musicaFocoInput.addEventListener('change',() =>{
+inputMusicaFoco.addEventListener('change',() =>{
     if(musica.paused){
         musica.play();
     }else{
@@ -28,20 +28,20 @@ musicaFocoInput.addEventListener('change',() =>{
     }
 });
 
-focoBt.addEventListener('click', () => {
+btFoco.addEventListener('click', () => {
     tempoDecorridoEmSegundos = 1500;
     alterarContexto('foco');
-    focoBt.classList.add('active');
+    btFoco.classList.add('active');
 });
-curtoBt.addEventListener('click', () => {
+btCurto.addEventListener('click', () => {
     tempoDecorridoEmSegundos = 300;
     alterarContexto('descanso-curto');
-    curtoBt.classList.add('active');
+    btCurto.classList.add('active');
 });
-longoBt.addEventListener('click', () => {
+btLongo.addEventListener('click', () => {
     tempoDecorridoEmSegundos = 900;
     alterarContexto('descanso-longo');
-    longoBt.classList.add('active');
+    btLongo.classList.add('active');
 });
 
 function alterarContexto(contexto) {
@@ -71,6 +71,11 @@ const contagemRegressiva = () => {
     if(tempoDecorridoEmSegundos <= 0){
         //somEnd.play();
         alert('Tempo finalizado!');
+        const focoAtivo = html.getAttribute('data-contexto') === 'foco';
+        if (focoAtivo){
+            const evento = new CustomEvent('FocoFinalizado');
+            document.dispatchEvent(evento);
+        }
         zerar();
         return;
     }
@@ -78,27 +83,27 @@ const contagemRegressiva = () => {
     mostrarTempo();
 }
 
-startPauseBt.addEventListener('click', iniciarOuPausar);
+btStartPause.addEventListener('click', iniciarOuPausar);
 
 function iniciarOuPausar(){
     if(intervaloId){
         zerar();
-        iniciarOuPausarBt.textContent = 'Voltar';
-        iniciarOuPausarIcon.setAttribute('src','../imagens/play_arrow.png');
+        btIniciarOuPausar.textContent = 'Voltar';
+        iconIniciarOuPausar.setAttribute('src','../imagens/play_arrow.png');
         return;
     }
     intervaloId = setInterval(contagemRegressiva, 1000);
     somPlay.play();
-    iniciarOuPausarIcon.setAttribute('src','../imagens/pause.png');
-    iniciarOuPausarBt.textContent = 'Pausar';
+    iconIniciarOuPausar.setAttribute('src','../imagens/pause.png');
+    btIniciarOuPausar.textContent = 'Pausar';
 }
 
 function zerar(){
     somPause.play();
     clearInterval(intervaloId);
     intervaloId = null;
-    iniciarOuPausarIcon.setAttribute('src','../imagens/play_arrow.png');
-    iniciarOuPausarBt.textContent = 'Começar';
+    iconIniciarOuPausar.setAttribute('src','../imagens/play_arrow.png');
+    btIniciarOuPausar.textContent = 'Começar';
 }
 
 function mostrarTempo(){
